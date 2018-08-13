@@ -164,6 +164,14 @@ return [
                 'default_group_id' => '1',
                 'is_default' => '1',
             ],
+            'test' => [
+                'website_id' => '2',
+                'code' => 'test',
+                'name' => 'Testing',
+                'sort_order' => '0',
+                'default_group_id' => '2',
+                'is_default' => '0',
+            ],
         ],
         'groups' => [
             0 => [
@@ -182,6 +190,14 @@ return [
                 'root_category_id' => '2',
                 'default_store_id' => '1',
             ],
+            2 => [
+                'group_id' => '2',
+                'website_id' => '2',
+                'code' => 'testing_store',
+                'name' => 'Testing store',
+                'root_category_id' => '2',
+                'default_store_id' => '2',
+            ],
         ],
         'stores' => [
             'admin' => [
@@ -199,6 +215,15 @@ return [
                 'website_id' => '1',
                 'group_id' => '1',
                 'name' => 'Default Store View',
+                'sort_order' => '0',
+                'is_active' => '1',
+            ],
+            'testing_store_view' => [
+                'store_id' => '2',
+                'code' => 'testing_store_view',
+                'website_id' => '2',
+                'group_id' => '2',
+                'name' => 'Testing store view',
                 'sort_order' => '0',
                 'is_active' => '1',
             ],
@@ -243,6 +268,11 @@ return [
      * CONFIG__DEFAULT__ADMIN__URL__CUSTOM for admin/url/custom
      * CONFIG__DEFAULT__CURRENCY__IMPORT__ERROR_EMAIL for currency/import/error_email
      * CONFIG__DEFAULT__CATALOG__PRODUCTALERT_CRON__ERROR_EMAIL for catalog/productalert_cron/error_email
+     * CONFIG__DEFAULT__PAYMENT__PAYFLOWPRO__USER for payment/payflowpro/user
+     * CONFIG__DEFAULT__PAYMENT__PAYFLOWPRO__PWD for payment/payflowpro/pwd
+     * CONFIG__DEFAULT__PAYMENT__PAYFLOW_LINK__PWD for payment/payflow_link/pwd
+     * CONFIG__DEFAULT__PAYMENT__PAYFLOW_ADVANCED__USER for payment/payflow_advanced/user
+     * CONFIG__DEFAULT__PAYMENT__PAYFLOW_ADVANCED__PWD for payment/payflow_advanced/pwd
      * CONFIG__DEFAULT__PAYMENT__AUTHORIZENET_DIRECTPOST__EMAIL_CUSTOMER for payment/authorizenet_directpost/email_customer
      * CONFIG__DEFAULT__PAYMENT__AUTHORIZENET_DIRECTPOST__LOGIN for payment/authorizenet_directpost/login
      * CONFIG__DEFAULT__PAYMENT__AUTHORIZENET_DIRECTPOST__MERCHANT_EMAIL for payment/authorizenet_directpost/merchant_email
@@ -250,11 +280,6 @@ return [
      * CONFIG__DEFAULT__PAYMENT__AUTHORIZENET_DIRECTPOST__TRANS_MD5 for payment/authorizenet_directpost/trans_md5
      * CONFIG__DEFAULT__PAYMENT__AUTHORIZENET_DIRECTPOST__CGI_URL for payment/authorizenet_directpost/cgi_url
      * CONFIG__DEFAULT__PAYMENT__AUTHORIZENET_DIRECTPOST__CGI_URL_TD for payment/authorizenet_directpost/cgi_url_td
-     * CONFIG__DEFAULT__PAYMENT__PAYFLOWPRO__USER for payment/payflowpro/user
-     * CONFIG__DEFAULT__PAYMENT__PAYFLOWPRO__PWD for payment/payflowpro/pwd
-     * CONFIG__DEFAULT__PAYMENT__PAYFLOW_LINK__PWD for payment/payflow_link/pwd
-     * CONFIG__DEFAULT__PAYMENT__PAYFLOW_ADVANCED__USER for payment/payflow_advanced/user
-     * CONFIG__DEFAULT__PAYMENT__PAYFLOW_ADVANCED__PWD for payment/payflow_advanced/pwd
      * CONFIG__DEFAULT__PAYMENT__BRAINTREE__PRIVATE_KEY for payment/braintree/private_key
      * CONFIG__DEFAULT__CONTACT__EMAIL__RECIPIENT_EMAIL for contact/email/recipient_email
      * CONFIG__DEFAULT__TRANS_EMAIL__IDENT_CUSTOM1__EMAIL for trans_email/ident_custom1/email
@@ -267,6 +292,11 @@ return [
      * CONFIG__DEFAULT__TRANS_EMAIL__IDENT_SALES__NAME for trans_email/ident_sales/name
      * CONFIG__DEFAULT__TRANS_EMAIL__IDENT_SUPPORT__EMAIL for trans_email/ident_support/email
      * CONFIG__DEFAULT__TRANS_EMAIL__IDENT_SUPPORT__NAME for trans_email/ident_support/name
+     * CONFIG__DEFAULT__PAYPAL__WPP__API_PASSWORD for paypal/wpp/api_password
+     * CONFIG__DEFAULT__PAYPAL__WPP__API_SIGNATURE for paypal/wpp/api_signature
+     * CONFIG__DEFAULT__PAYPAL__WPP__API_USERNAME for paypal/wpp/api_username
+     * CONFIG__DEFAULT__PAYPAL__FETCH_REPORTS__FTP_LOGIN for paypal/fetch_reports/ftp_login
+     * CONFIG__DEFAULT__PAYPAL__FETCH_REPORTS__FTP_PASSWORD for paypal/fetch_reports/ftp_password
      * CONFIG__DEFAULT__CARRIERS__DHL__ACCOUNT for carriers/dhl/account
      * CONFIG__DEFAULT__CARRIERS__DHL__GATEWAY_URL for carriers/dhl/gateway_url
      * CONFIG__DEFAULT__CARRIERS__DHL__ID for carriers/dhl/id
@@ -287,11 +317,6 @@ return [
      * CONFIG__DEFAULT__CARRIERS__USPS__GATEWAY_SECURE_URL for carriers/usps/gateway_secure_url
      * CONFIG__DEFAULT__CARRIERS__USPS__USERID for carriers/usps/userid
      * CONFIG__DEFAULT__CARRIERS__USPS__PASSWORD for carriers/usps/password
-     * CONFIG__DEFAULT__PAYPAL__WPP__API_PASSWORD for paypal/wpp/api_password
-     * CONFIG__DEFAULT__PAYPAL__WPP__API_SIGNATURE for paypal/wpp/api_signature
-     * CONFIG__DEFAULT__PAYPAL__WPP__API_USERNAME for paypal/wpp/api_username
-     * CONFIG__DEFAULT__PAYPAL__FETCH_REPORTS__FTP_LOGIN for paypal/fetch_reports/ftp_login
-     * CONFIG__DEFAULT__PAYPAL__FETCH_REPORTS__FTP_PASSWORD for paypal/fetch_reports/ftp_password
      * CONFIG__DEFAULT__ANALYTICS__URL__SIGNUP for analytics/url/signup
      * CONFIG__DEFAULT__ANALYTICS__URL__UPDATE for analytics/url/update
      * CONFIG__DEFAULT__ANALYTICS__URL__BI_ESSENTIALS for analytics/url/bi_essentials
@@ -322,6 +347,7 @@ return [
                     'default_media_type' => 'text/html',
                     'default_charset' => 'utf-8',
                     'demonotice' => '0',
+                    'includes' => '<link  rel="stylesheet" type="text/css"  media="all" href="{{MEDIA_URL}}styles.css" />',
                 ],
                 'search_engine_robots' => [
                     'default_robots' => 'INDEX,FOLLOW',
@@ -358,6 +384,9 @@ Disallow: /*SID=
                 'email' => [
                     'header_template' => 'design_email_header_template',
                     'footer_template' => 'design_email_footer_template',
+                ],
+                'theme' => [
+                    'theme_id' => 'frontend/Magento/luma',
                 ],
             ],
             'dev' => [
@@ -667,9 +696,9 @@ Disallow: /*SID=
                         'price' => 'price',
                         'media_image' => 'media_image',
                         'gallery' => 'gallery',
+                        'weee' => 'weee',
                         'swatch_visual' => 'swatch_visual',
                         'swatch_text' => 'swatch_text',
-                        'weee' => 'weee',
                     ],
                 ],
                 'region' => [
@@ -887,6 +916,12 @@ Disallow: /*SID=
                     'content_disposition' => 'inline',
                     'disable_guest_checkout' => '1',
                 ],
+                'search' => [
+                    'engine' => 'mysql',
+                    'min_query_length' => '1',
+                    'max_query_length' => '128',
+                    'max_count_cacheable_search_terms' => '100',
+                ],
                 'layered_navigation' => [
                     'price_range_calculation' => 'auto',
                     'price_range_step' => '100',
@@ -913,12 +948,6 @@ Disallow: /*SID=
                 ],
                 'review' => [
                     'allow_guest' => '1',
-                ],
-                'search' => [
-                    'engine' => 'mysql',
-                    'min_query_length' => '1',
-                    'max_query_length' => '128',
-                    'max_count_cacheable_search_terms' => '100',
                 ],
                 'category' => [
                     'root_id' => '2',
@@ -948,22 +977,6 @@ Disallow: /*SID=
                 'vault' => [
                     'debug' => '1',
                     'model' => 'Magento\\Vault\\Model\\VaultPaymentInterface',
-                ],
-                'authorizenet_directpost' => [
-                    'active' => '0',
-                    'cctypes' => 'AE,VI,MC,DI,JCB,DN',
-                    'model' => 'Magento\\Authorizenet\\Model\\Directpost',
-                    'order_status' => 'processing',
-                    'payment_action' => 'authorize',
-                    'title' => 'Credit Card Direct Post (Authorize.net)',
-                    'allowspecific' => '0',
-                    'currency' => 'USD',
-                    'create_order_before' => '1',
-                    'date_delim' => '/',
-                    'ccfields' => 'x_card_code,x_exp_date,x_card_num',
-                    'place_order_url' => 'authorizenet/directpost_payment/place',
-                    'cgi_url_test_mode' => 'https://test.authorize.net/gateway/transact.dll',
-                    'cgi_url_td_test_mode' => 'https://apitest.authorize.net/xml/v1/request.api',
                 ],
                 'paypal_express' => [
                     'model' => 'Magento\\Paypal\\Model\\Express',
@@ -1085,6 +1098,99 @@ Disallow: /*SID=
                     'display_ec' => '0',
                     'verify_peer' => '1',
                 ],
+                'authorizenet_directpost' => [
+                    'active' => '0',
+                    'cctypes' => 'AE,VI,MC,DI,JCB,DN',
+                    'model' => 'Magento\\Authorizenet\\Model\\Directpost',
+                    'order_status' => 'processing',
+                    'payment_action' => 'authorize',
+                    'title' => 'Credit Card Direct Post (Authorize.net)',
+                    'allowspecific' => '0',
+                    'currency' => 'USD',
+                    'create_order_before' => '1',
+                    'date_delim' => '/',
+                    'ccfields' => 'x_card_code,x_exp_date,x_card_num',
+                    'place_order_url' => 'authorizenet/directpost_payment/place',
+                    'cgi_url_test_mode' => 'https://test.authorize.net/gateway/transact.dll',
+                    'cgi_url_td_test_mode' => 'https://apitest.authorize.net/xml/v1/request.api',
+                ],
+                'braintree' => [
+                    'model' => 'BraintreeFacade',
+                    'title' => 'Credit Card (Braintree)',
+                    'payment_action' => 'authorize',
+                    'active' => '0',
+                    'is_gateway' => '1',
+                    'can_use_checkout' => '1',
+                    'can_authorize' => '1',
+                    'can_capture' => '1',
+                    'can_capture_partial' => '1',
+                    'can_authorize_vault' => '1',
+                    'can_capture_vault' => '1',
+                    'can_use_internal' => '1',
+                    'can_refund_partial_per_invoice' => '1',
+                    'can_refund' => '1',
+                    'can_void' => '1',
+                    'can_cancel' => '1',
+                    'can_edit' => '1',
+                    'can_review_payment' => '1',
+                    'can_deny_payment' => '1',
+                    'cctypes' => 'AE,VI,MC,DI,JCB,CUP,DN,MI',
+                    'useccv' => '1',
+                    'cctypes_braintree_mapper' => '{"american-express":"AE","discover":"DI","jcb":"JCB","mastercard":"MC","master-card":"MC","visa":"VI","maestro":"MI","diners-club":"DN","unionpay":"CUP"}',
+                    'order_status' => 'processing',
+                    'environment' => 'sandbox',
+                    'allowspecific' => '0',
+                    'sdk_url' => 'https://js.braintreegateway.com/js/braintree-2.32.0.min.js',
+                    'public_key' => NULL,
+                    'masked_fields' => 'cvv,number',
+                    'privateInfoKeys' => 'avsPostalCodeResponseCode,avsStreetAddressResponseCode,cvvResponseCode,processorAuthorizationCode,processorResponseCode,processorResponseText,liabilityShifted,liabilityShiftPossible,riskDataId,riskDataDecision',
+                    'paymentInfoKeys' => 'cc_type,cc_number,avsPostalCodeResponseCode,avsStreetAddressResponseCode,cvvResponseCode,processorAuthorizationCode,processorResponseCode,processorResponseText,liabilityShifted,liabilityShiftPossible,riskDataId,riskDataDecision',
+                    'avs_ems_adapter' => 'Magento\\Braintree\\Model\\AvsEmsCodeMapper',
+                    'cvv_ems_adapter' => 'Magento\\Braintree\\Model\\CvvEmsCodeMapper',
+                ],
+                'braintree_paypal' => [
+                    'model' => 'BraintreePayPalFacade',
+                    'title' => 'PayPal (Braintree)',
+                    'active' => '0',
+                    'payment_action' => 'authorize',
+                    'allowspecific' => '0',
+                    'require_billing_address' => '0',
+                    'allow_shipping_address_override' => '1',
+                    'display_on_shopping_cart' => '1',
+                    'order_status' => 'processing',
+                    'is_gateway' => '1',
+                    'can_use_checkout' => '1',
+                    'can_authorize' => '1',
+                    'can_capture' => '1',
+                    'can_capture_partial' => '1',
+                    'can_refund' => '1',
+                    'can_refund_partial_per_invoice' => '1',
+                    'can_void' => '1',
+                    'can_cancel' => '1',
+                    'can_authorize_vault' => '1',
+                    'can_capture_vault' => '1',
+                    'privateInfoKeys' => 'processorResponseCode,processorResponseText,paymentId',
+                    'paymentInfoKeys' => 'processorResponseCode,processorResponseText,paymentId,payerEmail',
+                    'supported_locales' => 'en_US,en_GB,en_AU,da_DK,fr_FR,fr_CA,de_DE,zh_HK,it_IT,nl_NL,no_NO,pl_PL,es_ES,sv_SE,tr_TR,pt_BR,ja_JP,id_ID,ko_KR,pt_PT,ru_RU,th_TH,zh_CN,zh_TW',
+                ],
+                'braintree_cc_vault' => [
+                    'model' => 'BraintreeCreditCardVaultFacade',
+                    'title' => 'Stored Cards (Braintree)',
+                    'instant_purchase' => [
+                        'available' => 'Magento\\Braintree\\Model\\InstantPurchase\\CreditCard\\AvailabilityChecker',
+                        'tokenFormat' => 'Magento\\Braintree\\Model\\InstantPurchase\\CreditCard\\TokenFormatter',
+                        'additionalInformation' => 'Magento\\Braintree\\Model\\InstantPurchase\\PaymentAdditionalInformationProvider',
+                    ],
+                ],
+                'braintree_paypal_vault' => [
+                    'model' => 'BraintreePayPalVaultFacade',
+                    'title' => 'Stored Accounts (Braintree PayPal)',
+                    'can_use_internal' => '1',
+                    'instant_purchase' => [
+                        'tokenFormat' => 'Magento\\Braintree\\Model\\InstantPurchase\\PayPal\\TokenFormatter',
+                        'additionalInformation' => 'Magento\\Braintree\\Model\\InstantPurchase\\PaymentAdditionalInformationProvider',
+                    ],
+                ],
                 'checkmo' => [
                     'active' => '1',
                     'model' => 'Magento\\OfflinePayments\\Model\\Checkmo',
@@ -1168,83 +1274,6 @@ Disallow: /*SID=
                     'can_review_payment' => '0',
                     'can_use_for_multishipping' => '0',
                 ],
-                'braintree' => [
-                    'model' => 'BraintreeFacade',
-                    'title' => 'Credit Card (Braintree)',
-                    'payment_action' => 'authorize',
-                    'active' => '0',
-                    'is_gateway' => '1',
-                    'can_use_checkout' => '1',
-                    'can_authorize' => '1',
-                    'can_capture' => '1',
-                    'can_capture_partial' => '1',
-                    'can_authorize_vault' => '1',
-                    'can_capture_vault' => '1',
-                    'can_use_internal' => '1',
-                    'can_refund_partial_per_invoice' => '1',
-                    'can_refund' => '1',
-                    'can_void' => '1',
-                    'can_cancel' => '1',
-                    'can_edit' => '1',
-                    'can_review_payment' => '1',
-                    'can_deny_payment' => '1',
-                    'cctypes' => 'AE,VI,MC,DI,JCB,CUP,DN,MI',
-                    'useccv' => '1',
-                    'cctypes_braintree_mapper' => '{"american-express":"AE","discover":"DI","jcb":"JCB","mastercard":"MC","master-card":"MC","visa":"VI","maestro":"MI","diners-club":"DN","unionpay":"CUP"}',
-                    'order_status' => 'processing',
-                    'environment' => 'sandbox',
-                    'allowspecific' => '0',
-                    'sdk_url' => 'https://js.braintreegateway.com/js/braintree-2.32.0.min.js',
-                    'public_key' => NULL,
-                    'masked_fields' => 'cvv,number',
-                    'privateInfoKeys' => 'avsPostalCodeResponseCode,avsStreetAddressResponseCode,cvvResponseCode,processorAuthorizationCode,processorResponseCode,processorResponseText,liabilityShifted,liabilityShiftPossible,riskDataId,riskDataDecision',
-                    'paymentInfoKeys' => 'cc_type,cc_number,avsPostalCodeResponseCode,avsStreetAddressResponseCode,cvvResponseCode,processorAuthorizationCode,processorResponseCode,processorResponseText,liabilityShifted,liabilityShiftPossible,riskDataId,riskDataDecision',
-                    'avs_ems_adapter' => 'Magento\\Braintree\\Model\\AvsEmsCodeMapper',
-                    'cvv_ems_adapter' => 'Magento\\Braintree\\Model\\CvvEmsCodeMapper',
-                ],
-                'braintree_paypal' => [
-                    'model' => 'BraintreePayPalFacade',
-                    'title' => 'PayPal (Braintree)',
-                    'active' => '0',
-                    'payment_action' => 'authorize',
-                    'allowspecific' => '0',
-                    'require_billing_address' => '0',
-                    'allow_shipping_address_override' => '1',
-                    'display_on_shopping_cart' => '1',
-                    'order_status' => 'processing',
-                    'is_gateway' => '1',
-                    'can_use_checkout' => '1',
-                    'can_authorize' => '1',
-                    'can_capture' => '1',
-                    'can_capture_partial' => '1',
-                    'can_refund' => '1',
-                    'can_refund_partial_per_invoice' => '1',
-                    'can_void' => '1',
-                    'can_cancel' => '1',
-                    'can_authorize_vault' => '1',
-                    'can_capture_vault' => '1',
-                    'privateInfoKeys' => 'processorResponseCode,processorResponseText,paymentId',
-                    'paymentInfoKeys' => 'processorResponseCode,processorResponseText,paymentId,payerEmail',
-                    'supported_locales' => 'en_US,en_GB,en_AU,da_DK,fr_FR,fr_CA,de_DE,zh_HK,it_IT,nl_NL,no_NO,pl_PL,es_ES,sv_SE,tr_TR,pt_BR,ja_JP,id_ID,ko_KR,pt_PT,ru_RU,th_TH,zh_CN,zh_TW',
-                ],
-                'braintree_cc_vault' => [
-                    'model' => 'BraintreeCreditCardVaultFacade',
-                    'title' => 'Stored Cards (Braintree)',
-                    'instant_purchase' => [
-                        'available' => 'Magento\\Braintree\\Model\\InstantPurchase\\CreditCard\\AvailabilityChecker',
-                        'tokenFormat' => 'Magento\\Braintree\\Model\\InstantPurchase\\CreditCard\\TokenFormatter',
-                        'additionalInformation' => 'Magento\\Braintree\\Model\\InstantPurchase\\PaymentAdditionalInformationProvider',
-                    ],
-                ],
-                'braintree_paypal_vault' => [
-                    'model' => 'BraintreePayPalVaultFacade',
-                    'title' => 'Stored Accounts (Braintree PayPal)',
-                    'can_use_internal' => '1',
-                    'instant_purchase' => [
-                        'tokenFormat' => 'Magento\\Braintree\\Model\\InstantPurchase\\PayPal\\TokenFormatter',
-                        'additionalInformation' => 'Magento\\Braintree\\Model\\InstantPurchase\\PaymentAdditionalInformationProvider',
-                    ],
-                ],
             ],
             'sales' => [
                 'msrp' => [
@@ -1298,6 +1327,19 @@ Disallow: /*SID=
                     'notify_stock_qty' => '1',
                     'enable_qty_increments' => '0',
                     'qty_increments' => '1',
+                ],
+            ],
+            'url_rewrite' => [
+                'entity_types' => [
+                    'product' => [
+                        'generator' => 'Magento\\Framework\\DataObject',
+                    ],
+                    'category' => [
+                        'generator' => 'Magento\\Framework\\DataObject',
+                    ],
+                    'cms-page' => [
+                        'generator' => 'Magento\\Framework\\DataObject',
+                    ],
                 ],
             ],
             'sales_email' => [
@@ -1402,6 +1444,79 @@ Disallow: /*SID=
                     'template' => 'checkout_payment_failed_template',
                 ],
             ],
+            'tax' => [
+                'classes' => [
+                    'shipping_tax_class' => '0',
+                    'default_product_tax_class' => '2',
+                    'default_customer_tax_class' => '3',
+                    'default_customer_code' => 'General',
+                    'creditmemo_adjustment_negative_code' => 'adjustment-negative',
+                    'creditmemo_adjustment_positive_code' => 'adjustment-positive',
+                    'giftwrap_order_code' => 'order-gift-wrapping',
+                    'giftwrap_item_code' => 'giftwrap-',
+                    'printed_giftcard_code' => 'printed-giftcard',
+                    'reward_points_code' => 'reward-points',
+                ],
+                'calculation' => [
+                    'algorithm' => 'TOTAL_BASE_CALCULATION',
+                    'apply_after_discount' => '1',
+                    'discount_tax' => '0',
+                    'based_on' => 'shipping',
+                    'price_includes_tax' => '0',
+                    'shipping_includes_tax' => '0',
+                    'apply_tax_on' => '0',
+                ],
+                'defaults' => [
+                    'country' => 'US',
+                    'region' => '0',
+                ],
+                'display' => [
+                    'type' => '1',
+                    'shipping' => '1',
+                ],
+                'cart_display' => [
+                    'price' => '1',
+                    'subtotal' => '1',
+                    'shipping' => '1',
+                    'discount' => '1',
+                    'grandtotal' => '0',
+                    'full_summary' => '0',
+                    'zero_tax' => '0',
+                ],
+                'sales_display' => [
+                    'price' => '1',
+                    'subtotal' => '1',
+                    'shipping' => '1',
+                    'discount' => '1',
+                    'grandtotal' => '0',
+                    'full_summary' => '0',
+                    'zero_tax' => '0',
+                ],
+                'notification' => [
+                    'info_url' => 'http://docs.magento.com/m2/ce/user_guide/tax/warning-messages.html',
+                ],
+                'weee' => [
+                    'enable' => '0',
+                    'display' => '1',
+                    'display_list' => '1',
+                    'display_sales' => '1',
+                    'display_email' => '1',
+                    'apply_vat' => '0',
+                    'include_in_subtotal' => '0',
+                ],
+                'vertex_settings' => [
+                    'enable_vertex' => '0',
+                    'trustedId' => NULL,
+                    'invoice_order' => 'invoice_created',
+                    'api_url' => 'https://mgcsconnect.vertexsmb.com/vertex-ws/services/CalculateTax60',
+                    'address_api_url' => 'https://mgcsconnect.vertexsmb.com/vertex-ws/services/LookupTaxAreas60',
+                    'show_manual_button' => '0',
+                    'show_taxrequest_popup' => '1',
+                    'allow_cart_request' => '1',
+                    'calculation_function' => 'CalculateTax60',
+                    'valadtion_function' => 'LookupTaxAreas60',
+                ],
+            ],
             'contact' => [
                 'contact' => [
                     'enabled' => '1',
@@ -1409,6 +1524,22 @@ Disallow: /*SID=
                 'email' => [
                     'sender_email_identity' => 'custom2',
                     'email_template' => 'contact_email_email_template',
+                ],
+            ],
+            'paypal' => [
+                'style' => [
+                    'logo' => NULL,
+                ],
+                'wpp' => [
+                    'button_flavor' => 'dynamic',
+                ],
+                'wpuk' => [
+                    'user' => NULL,
+                    'pwd' => NULL,
+                ],
+                'fetch_reports' => [
+                    'schedule' => '1',
+                    'time' => '00,00,00',
                 ],
             ],
             'oauth' => [
@@ -1655,22 +1786,6 @@ Disallow: /*SID=
                     'active' => '0',
                 ],
             ],
-            'paypal' => [
-                'style' => [
-                    'logo' => NULL,
-                ],
-                'wpp' => [
-                    'button_flavor' => 'dynamic',
-                ],
-                'wpuk' => [
-                    'user' => NULL,
-                    'pwd' => NULL,
-                ],
-                'fetch_reports' => [
-                    'schedule' => '1',
-                    'time' => '00,00,00',
-                ],
-            ],
             'analytics' => [
                 'integration_name' => 'Magento Analytics user',
                 'general' => [
@@ -1778,19 +1893,6 @@ Disallow: /*SID=
                     'check_by' => '0',
                 ],
             ],
-            'url_rewrite' => [
-                'entity_types' => [
-                    'product' => [
-                        'generator' => 'Magento\\Framework\\DataObject',
-                    ],
-                    'category' => [
-                        'generator' => 'Magento\\Framework\\DataObject',
-                    ],
-                    'cms-page' => [
-                        'generator' => 'Magento\\Framework\\DataObject',
-                    ],
-                ],
-            ],
             'shipping' => [
                 'origin' => [
                     'country_id' => 'US',
@@ -1847,79 +1949,6 @@ Disallow: /*SID=
                             'any_path' => '/*/*.xml',
                         ],
                     ],
-                ],
-            ],
-            'tax' => [
-                'classes' => [
-                    'shipping_tax_class' => '0',
-                    'default_product_tax_class' => '2',
-                    'default_customer_tax_class' => '3',
-                    'default_customer_code' => 'General',
-                    'creditmemo_adjustment_negative_code' => 'adjustment-negative',
-                    'creditmemo_adjustment_positive_code' => 'adjustment-positive',
-                    'giftwrap_order_code' => 'order-gift-wrapping',
-                    'giftwrap_item_code' => 'giftwrap-',
-                    'printed_giftcard_code' => 'printed-giftcard',
-                    'reward_points_code' => 'reward-points',
-                ],
-                'calculation' => [
-                    'algorithm' => 'TOTAL_BASE_CALCULATION',
-                    'apply_after_discount' => '1',
-                    'discount_tax' => '0',
-                    'based_on' => 'shipping',
-                    'price_includes_tax' => '0',
-                    'shipping_includes_tax' => '0',
-                    'apply_tax_on' => '0',
-                ],
-                'defaults' => [
-                    'country' => 'US',
-                    'region' => '0',
-                ],
-                'display' => [
-                    'type' => '1',
-                    'shipping' => '1',
-                ],
-                'cart_display' => [
-                    'price' => '1',
-                    'subtotal' => '1',
-                    'shipping' => '1',
-                    'discount' => '1',
-                    'grandtotal' => '0',
-                    'full_summary' => '0',
-                    'zero_tax' => '0',
-                ],
-                'sales_display' => [
-                    'price' => '1',
-                    'subtotal' => '1',
-                    'shipping' => '1',
-                    'discount' => '1',
-                    'grandtotal' => '0',
-                    'full_summary' => '0',
-                    'zero_tax' => '0',
-                ],
-                'notification' => [
-                    'info_url' => 'http://docs.magento.com/m2/ce/user_guide/tax/warning-messages.html',
-                ],
-                'weee' => [
-                    'enable' => '0',
-                    'display' => '1',
-                    'display_list' => '1',
-                    'display_sales' => '1',
-                    'display_email' => '1',
-                    'apply_vat' => '0',
-                    'include_in_subtotal' => '0',
-                ],
-                'vertex_settings' => [
-                    'enable_vertex' => '0',
-                    'trustedId' => NULL,
-                    'invoice_order' => 'invoice_created',
-                    'api_url' => 'https://mgcsconnect.vertexsmb.com/vertex-ws/services/CalculateTax60',
-                    'address_api_url' => 'https://mgcsconnect.vertexsmb.com/vertex-ws/services/LookupTaxAreas60',
-                    'show_manual_button' => '0',
-                    'show_taxrequest_popup' => '1',
-                    'allow_cart_request' => '1',
-                    'calculation_function' => 'CalculateTax60',
-                    'valadtion_function' => 'LookupTaxAreas60',
                 ],
             ],
             'webapi' => [
