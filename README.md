@@ -13,14 +13,14 @@ Testing Magento 2 bugs
 ## Bug 17378
 1. Run the project setup
 2. Export all product catalog data
-3. Change "catalog.seo.product_url_suffix" and "catalog.seo.category_url_suffix" to NULL.
+3. Change "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to NULL.
 
 Bugs: 
-- Both categories and products can have the same url_rewrite request_path if the catalog.seo.product_url_suffix and/or catalog.seo.category_url_suffix changes
--- This can also occur if catalog.seo.product_use_categories changes to allow a product to match a category path 
+- Both categories and products can have the same url_rewrite request_path if the catalog/seo/product_url_suffix and/or catalog/seo/category_url_suffix changes
+-- This can also occur if catalog/seo/product_use_categories changes to allow a product to match a category path 
 - Categories with the same URL key will only allow the last category to have it's url_rewrites updated
 - The same as above but for products
-- If a category URL is updated and a child category has a conflict with a product in the same category, the URL rewirte generation will rollback the changes but still report a conflict which has a link to nothing.
+- If a category URL is updated and a child category has a conflict with a product in the same category, the URL rewrite generation will rollback the changes but still report a conflict which has a link to nothing.
 - === Fixed === Stores are not imported from the config.php on install
 - Category URL rewrites are not generated for additional stores even when they are created on install
 - Cache key doesn't update properly for a different store id if the base URL is the same. Magento\Framework\App\PageCache\Identifier prefers the vary string.
@@ -30,28 +30,29 @@ Bugs:
 - If a custom option is defined without values a fatal error will occur (this happens due to import data)
 - If a configurable product has special prices start and end dates, these can't be updated in the admin interface as the fields aren't present. However; these fields are still sent across in the post data.
 - Cannot save special price dates for en_AU locale.
+- Exporting sample data and immediately attempting to import it fails.
 
 
-### "./bin/magento config:show" fails
+## "./bin/magento config:show" fails
 The ./bin/magento config:show command fails with a fatal error after running ./bin/magento app:config:dump
-Simlar issue reported perviously https://github.com/magento/magento2/issues/16654
+Similar issue reported previously https://github.com/magento/magento2/issues/16654
 
-#### Preconditions
+### Preconditions
 1. Magento 2.2.5
 2. PHP 7.1.20
 3. MySQL 5.7.23
 
-#### Steps to reproduce
-1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition ./<install dir>/
-2. cd ./<install dir>
+### Steps to reproduce
+1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition <install dir>
+2. cd <install dir>
 3. ./bin/magento setup:install --backend-frontname=backend --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
 4. ./bin/magento app:config:dump
 5. ./bin/magento config:show
 
-#### Expected Result
+### Expected Result
 The output of all config values
 
-#### Actual Result
+### Actual Result
 ...
 catalog/productalert_cron/error_email - 
 catalog/product_video/play_if_base - 0
