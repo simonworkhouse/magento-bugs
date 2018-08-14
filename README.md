@@ -3,7 +3,7 @@ Testing Magento 2 bugs
 
 ## Steps used to create this project
 1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition ./magento/
-2. ./bin/magento setup:install --backend-frontname=backend --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
+2. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
 3. ./bin/magento deploy:mode:set developer
 4. ./bin/magento cache:disable
 5. ./bin/magento sampledata:deploy
@@ -31,6 +31,87 @@ Bugs:
 - If a configurable product has special prices start and end dates, these can't be updated in the admin interface as the fields aren't present. However; these fields are still sent across in the post data.
 - Cannot save special price dates for en_AU locale.
 - Exporting sample data and immediately attempting to import it fails.
+-- Says: 1. Options for downloadable products not found in row(s): 46, 47, 48, 49, 50, 51
+
+
+
+
+## URL rewrite generation has a number of significant issues
+There are a number of conditions where the entries in the url_rewrite table can conflict sometimes silently failing to update the rewrites, sometimes showing links to unexpected conflicts and sometimes linking to conflicts that do not exist.
+
+
+
+
+
+## Exporting product data generates a CSV that doesn't pass the import check process
+From an clean install with sample data deployed, if you export product data via "System/Data Transfer/Export" then immdediately try to import it using "System/Data Transfer/Import" it fails to pass the initial data validation checks.
+The error received is:
+1. Options for downloadable products not found in row(s): 46, 47, 48, 49, 50, 51
+
+### Preconditions
+1. Magento 2.2.5
+2. PHP 7.1.20
+3. MySQL 5.7.23
+
+### Steps to reproduce
+1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition {install dir}
+2. cd {install dir}
+3. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
+4. ./bin/magento sampledata:deploy
+5. ./bin/magento setup:upgrade
+6. Visit the admin panel run an export and then an import of that exported data.
+
+#### Export settings
+- Entity Type: Products
+- Export File Format: CSV (default)
+- Fields Enclosure: Not checked (default)
+- No entity attributes excluded (default)
+
+#### Import settings
+- Entity Type: Products
+- Import Behavior: Add/Update
+- Stop on Error (default)
+- Allowed Errors Count: 10 (default)
+- Field separator: , (default)
+- Multiple value separator: , (default)
+- Fields Enclosure: Not checked (default)
+
+### Expected Result
+Import to be successful
+
+### Actual Result
+Import fails with the error:
+1. Options for downloadable products not found in row(s): 46, 47, 48, 49, 50, 51
+
+
+
+
+## Category URL rewrites not generated for new stores
+When a new website/store is created URL rewrites are only generated for the new store if a category's url_key is updated.
+There doesn't appear to be any mechanism to re-generate these URL rewrites for a store, and they also don't take into account any changes to the "catalog/seo/category_url_suffix" configuration value. 
+
+### Preconditions
+1. Magento 2.2.5
+2. PHP 7.1.20
+3. MySQL 5.7.23
+
+### Steps to reproduce
+1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition <install dir>
+2. cd <install dir>
+3. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
+4. ./bin/magento sampledata:deploy
+5. ./bin/magento setup:upgrade
+6. Visit the admin panel and create a new website, store and store view using the same root category as the default store.
+
+### Expected Result
+Visiting category URLs on the frontend of the new store should match the URLs on the frontend of the default store.
+Also, entries for the now store should exist in the url_rewrite table.
+
+### Actual Result
+URLs for the new store are in the format "/catalog/category/view/s/{url_key}/id/{category_id}/" while the default store has the expected URL format.
+Also, no entries for the new store exist in the url_rewrite table and there doesn't appear to be any way to generate these short of updating the URL key for each category.  
+
+
 
 
 ## "./bin/magento config:show" fails
@@ -45,7 +126,7 @@ Similar issue reported previously https://github.com/magento/magento2/issues/166
 ### Steps to reproduce
 1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition <install dir>
 2. cd <install dir>
-3. ./bin/magento setup:install --backend-frontname=backend --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
+3. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
 4. ./bin/magento app:config:dump
 5. ./bin/magento config:show
 
