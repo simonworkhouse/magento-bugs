@@ -36,10 +36,93 @@ Bugs:
 
 
 
+## Category URL rewrites not generated after changes to "catalog/seo/category_url_suffix", "catalog/seo/product_url_suffix" or "catalog/seo/product_use_categories"
+When updating the values of "catalog/seo/category_url_suffix", "catalog/seo/product_url_suffix" or "catalog/seo/product_use_categories" the entries in the url_rewrite table aren't generated except when a categories url_key is updated.
+There doesn't appear to be any mechanism to re-generate these URL rewrites when these configuration values change. 
+
+### Preconditions
+1. Magento 2.2.5
+2. PHP 7.1.20
+3. MySQL 5.7.23
+
+### Steps to reproduce
+1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition <install dir>
+2. cd <install dir>
+3. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
+4. ./bin/magento sampledata:deploy
+5. ./bin/magento setup:upgrade
+6. Update the values for "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to ".php" and the value for "catalog/seo/product_use_categories" to "1"
+
+### Expected Result
+URL rewrites to be generated in the url_rewrite table and the URLs on the frontend should match the new suffixes and format.
+
+### Actual Result
+No URL rewrites are generated and the frontend still displays the old URL format and suffixes.
+
+
+
+
+
 ## URL rewrite generation has a number of significant issues
 There are a number of conditions where the entries in the url_rewrite table can conflict sometimes silently failing to update the rewrites, sometimes showing links to unexpected conflicts and sometimes linking to conflicts that do not exist.
 
+### Preconditions
+1. Magento 2.2.5
+2. PHP 7.1.20
+3. MySQL 5.7.23
 
+### Steps to reproduce
+#### Initial setup
+1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition {install dir}
+2. cd {install dir}
+3. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
+4. ./bin/magento deploy:mode:set developer
+5. ./bin/magento app:config:dump
+6. ./bin/magento cache:disable
+
+#### Scenario one
+Updating the value of "catalog/seo/category_url_suffix" can cause Magento to silently fail to update the entries in the url_rewrite table for a specific category
+1. Perform the steps described in "Initial setup"
+2. Confirm that the value for "catalog/seo/category_url_suffix" is ".html" (the default value)
+3. Proceed to the admin panel and create a sub-category called "Sale" with the URL key of "sale"
+4. Create a sub-category under "Sale" called "Sandwiches" with the URL key of "sandwiches"
+5. Now update the name of the new category from "Sandwiches" to "Sandwiches Old" (NOTE: This step is just to simulate user behaviour and highlight the potential of conflicts when importing data)
+6. Update the value of "catalog/seo/category_url_suffix" to ".php" and run "./bin/magento app:config:import"
+7. Create another sub-category under "Sale" called "Sandwiches" with the URL key of "sandwiches"
+8. Update the value of "catalog/seo/category_url_suffix" to ".test" and run "./bin/magento app:config:import"
+9. Update the URL key for the "Sale" category from "sale" to "sale-test"
+
+#### Scenario two
+Updating the values of "catalog/seo/product_url_suffix", "catalog/seo/category_url_suffix" and "catalog/seo/product_use_categories" can cause Magento to fail to update the entries in the url_rewrite table while showing an error with a link to a non-existent rewrite.
+1. Perform the steps described in "Initial setup"
+2. Confirm that the values for "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" are ".html" and the value for "catalog/seo/product_use_categories" is "0" (the default values)
+3. Proceed to the admin panel and create a sub-category called "Sale" with the URL key of "sale"
+4. Create a sub-category under "Sale" called "Sandwiches" with the URL key of "sandwiches"
+5. Update the value of "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to ".php" and run "./bin/magento app:config:import"
+6. Create a product called "Sandwiches" with the URL key of "sandwiches" and add it to the "Sale" category
+7. Update the values for "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to ".test", the value for "catalog/seo/product_use_categories" to "1" and run "./bin/magento app:config:import"
+8. Update the URL key for the "Sale" category from "sale" to "sale-test"
+
+### Expected Result
+#### Scenario one
+The URL keys for categories should never have been allowed to conflict like this and at the very least a warning notifying the admin user of conflicts in the url_rewrite table should be shown.
+
+#### Scenario two
+Same as scenario one except that there should be a much better way of managing URL rewrite conflicts.
+
+### Actual Result 
+#### Scenario one 
+A success message saying "You saved the category." is displayed to the admin user.
+
+#### Scenario two
+An error stating tho following is displayed:
+```
+The value specified in the URL Key field would generate a URL that already exists.
+To resolve this conflict, you can either change the value of the URL Key field (located in the Search Engine Optimization section) to a unique value, or change the Request Path fields in all locations listed below:
+   
+- sale-test/sandwiches.test
+```
+The link "sale-test/sandwiches.test" points to a record in the url_rewrite table that doesn't exist as the transaction that contained the insert for this entry was rolled back.
 
 
 
