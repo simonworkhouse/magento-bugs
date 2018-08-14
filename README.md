@@ -16,22 +16,130 @@ Testing Magento 2 bugs
 3. Change "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to NULL.
 
 Bugs: 
-- Both categories and products can have the same url_rewrite request_path if the catalog/seo/product_url_suffix and/or catalog/seo/category_url_suffix changes
--- This can also occur if catalog/seo/product_use_categories changes to allow a product to match a category path 
-- Categories with the same URL key will only allow the last category to have it's url_rewrites updated
-- The same as above but for products
-- If a category URL is updated and a child category has a conflict with a product in the same category, the URL rewrite generation will rollback the changes but still report a conflict which has a link to nothing.
+- === Reported === Both categories and products can have the same url_rewrite request_path if the catalog/seo/product_url_suffix and/or catalog/seo/category_url_suffix changes -- This can also occur if catalog/seo/product_use_categories changes to allow a product to match a category path 
+- === Reported === Categories with the same URL key will only allow the last category to have it's url_rewrites updated
+- === Reported === The same as above but for products
+- === Reported === If a category URL is updated and a child category has a conflict with a product in the same category, the URL rewrite generation will rollback the changes but still report a conflict which has a link to nothing.
 - === Fixed === Stores are not imported from the config.php on install
-- Category URL rewrites are not generated for additional stores even when they are created on install
+- === Reported === Category URL rewrites are not generated for additional stores even when they are created on install
 - Cache key doesn't update properly for a different store id if the base URL is the same. Magento\Framework\App\PageCache\Identifier prefers the vary string.
-- Importer: Failed categories aren't removed from the categories returned by upsertCategories
+- === Reported === Importer: Failed categories aren't removed from the categories returned by upsertCategories
 - No option for SVG support. The list of extensions are hard-coded into the relevant class.
-- CMS block search doesn't do partial matches
+- === Reported === CMS block search doesn't do partial matches
 - If a custom option is defined without values a fatal error will occur (this happens due to import data)
 - If a configurable product has special prices start and end dates, these can't be updated in the admin interface as the fields aren't present. However; these fields are still sent across in the post data.
 - Cannot save special price dates for en_AU locale.
-- Exporting sample data and immediately attempting to import it fails.
--- Says: 1. Options for downloadable products not found in row(s): 46, 47, 48, 49, 50, 51
+- === Reported === Exporting sample data and immediately attempting to import it fails. -- Says: 1. Options for downloadable products not found in row(s): 46, 47, 48, 49, 50, 51
+- === Reported === Typo in CMS storage class "keepRation"
+
+
+
+
+## CMS block search doesn't do partial matches
+When searching for blocks in the admin panel under "Content/Blocks" no results are displayed for partial matches for either the block title or identifier.
+Although title will match for whole word matches.
+
+### Preconditions
+1. Magento 2.2.5
+2. PHP 7.1.20
+3. MySQL 5.7.23
+
+### Steps to reproduce
+1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition {install dir}
+2. cd {install dir}
+3. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
+4. Create a new block with the title "Some test block" and identifier "some_test_identifier" under "Content/Blocks" in the admin panel.
+5. Use the search input on the "Content/Blocks" index page and search for either "bloc" or "test_identifier"
+
+### Expected Result
+The test block that we created should be shown for both search queries
+
+### Actual Result
+No blocks can be found with those search queries.
+
+
+
+
+
+## Magento\CatalogImportExport\Model\Import\Product\CategoryProcessor Failed categories aren't removed from the categories returned by upsertCategories
+The function upsertCategories may return a category id that is no longer present in the DB as upsertCategory on line 138 of Magento\CatalogImportExport\Model\Import\Product\CategoryProcessor fetches the category id from the local class cache ($this->categories) of the available categories.
+This causes the import to fail if the category was inserted, added to the cache and then removed from the DB due to either a transaction being rolled back or the category being automatically deleted.
+Transactions in this instance are probably being rolled back due to url_key conflicts.
+ 
+### Preconditions
+1. Magento 2.2.5
+2. PHP 7.1.20
+3. MySQL 5.7.23
+
+### Steps to reproduce
+My best guess is that transactions are being rolled back due to url_key conflicts.
+Refer to the issue https://github.com/magento/magento2/issues/17586 for clarification on how to set up import data that will have unexpected URL rewrite conflicts.
+It would take quite a bit of time to set up a full procedure, but let me know if it's absolutely required.
+It should be obvious enough for anyone reviewing the code and referring to the previous bug report https://github.com/magento/magento2/issues/17586
+
+I have implemented a work-around for now, but this needs to be addressed and fixed in the core.
+
+```
+<?php
+
+namespace {my_namespace}\Plugin\Magento\CatalogImportExport\Model\Import\Product;
+
+use Magento\CatalogImportExport\Model\Import\Product\CategoryProcessor;
+
+class CategoryProcessorPlugin
+{
+    /**
+     * // NOTE: Must cache the failed categories here as Magento caches them even if they have failed and as 
+     *          a result won't add them to the failed categories list
+     * @var array
+     */
+    protected static $failedCategoriesCache = [];
+
+    /**
+     * [afterUpsertCategories description]
+     * @param  CategoryProcessor $categoryProcessor [description]
+     * @param  [type]            $categoryIds       [description]
+     * @return [type]                               [description]
+     */
+    public function afterUpsertCategories(CategoryProcessor $categoryProcessor, $categoryIds)
+    {
+        // NOTE: Work-around for a Magento bug where it's still adding failed categories to the list
+        if ($failedCategories = $categoryProcessor->getFailedCategories()) {
+            foreach ($failedCategories as $failedCategory) {
+                self::$failedCategoriesCache[] = $failedCategory['category']->getId();
+            }
+        }
+        $categoryIds = array_diff($categoryIds, self::$failedCategoriesCache);
+        return $categoryIds;
+    }
+}
+```
+
+### Expected Result
+The function upsertCategories should only ever return categories that actually exist.
+
+### Actual Result
+The function upsertCategories returns categories from the local class cache that have since been removed from the DB during the same import run.
+ 
+
+
+
+
+## Typo in Magento\Cms\Model\Wysiwyg\Images\Storage function resizeFile($source, $keepRation = true)
+The parameter $keepRation should be called $keepRatio
+
+### Preconditions
+1. Magento 2.2.5
+
+### Steps to reproduce
+Look at the resizeFile function on line 572 of the Magento\Cms\Model\Wysiwyg\Images\Storage class.
+
+### Expected Result
+The parameter $keepRation should be $keepRatio
+
+### Actual Result
+The parameter is called $keepRation
+
 
 
 
@@ -46,12 +154,12 @@ There doesn't appear to be any mechanism to re-generate these URL rewrites when 
 3. MySQL 5.7.23
 
 ### Steps to reproduce
-1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition <install dir>
-2. cd <install dir>
+1. composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition {install dir}
+2. cd {install dir}
 3. ./bin/magento setup:install --backend-frontname=? --db-host=? --db-name=? --db-user=? --db-password=? --base-url=? --admin-user=? --admin-password=? --admin-email=? --admin-firstname=? --admin-lastname=?
 4. ./bin/magento sampledata:deploy
 5. ./bin/magento setup:upgrade
-6. Update the values for "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to ".php" and the value for "catalog/seo/product_use_categories" to "1"
+6. Update the values for "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to ".php", the value for "catalog/seo/product_use_categories" to "1" and run "./bin/magento app:config:import"
 
 ### Expected Result
 URL rewrites to be generated in the url_rewrite table and the URLs on the frontend should match the new suffixes and format.
@@ -103,12 +211,19 @@ Updating the values of "catalog/seo/product_url_suffix", "catalog/seo/category_u
 7. Update the values for "catalog/seo/product_url_suffix" and "catalog/seo/category_url_suffix" to ".test", the value for "catalog/seo/product_use_categories" to "1" and run "./bin/magento app:config:import"
 8. Update the URL key for the "Sale" category from "sale" to "sale-test"
 
+#### Scenario three
+Scenario three is essentially combinations of the procedures in scenarios one and two except where a valid link to the matching url_rewrite entry is displayed.
+This scenario causes a number of issues with the import process but that will have to be reported as a separate bug. 
+
 ### Expected Result
 #### Scenario one
 The URL keys for categories should never have been allowed to conflict like this and at the very least a warning notifying the admin user of conflicts in the url_rewrite table should be shown.
 
 #### Scenario two
 Same as scenario one except that there should be a much better way of managing URL rewrite conflicts.
+
+#### Scenario three
+Essentially the same as scenario one
 
 ### Actual Result 
 #### Scenario one 
@@ -123,6 +238,9 @@ To resolve this conflict, you can either change the value of the URL Key field (
 - sale-test/sandwiches.test
 ```
 The link "sale-test/sandwiches.test" points to a record in the url_rewrite table that doesn't exist as the transaction that contained the insert for this entry was rolled back.
+
+#### Scenario three
+Unexpected URL conflicts are shown
 
 
 
